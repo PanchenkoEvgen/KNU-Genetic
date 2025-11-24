@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 import math
 import random
-import numpy as np
 
 N = 6 #population 
 T = 10 #quantity of generations
@@ -15,7 +14,7 @@ top = 1
 eps = 0.0001
 epsN = int(-math.log10(eps))
 
-selection_n = 6
+selection_n = 36
 mutation_n = 3
 
 def func(x,y):
@@ -108,43 +107,68 @@ def mutation(individuals, n):
         individuals[random_ind][random_xy][random_gen] = random_num
     return individuals
 
+def draw_plot(result):
+    x = [r[0] for r in result]
+    y = [r[1] for r in result]
+    t = [r[2] for r in result]
+    p = generate_population(starting_individuals(left_edge, right_edge,bottom, top, 100))
+    x_true = [r[0] for r in p]
+    y_true = [r[1] for r in p]
+    t_true = [r[2] for r in p]
+
+    fig, axs = plt.subplots(1, 2, figsize=(12, 5))
+
+    norm = Normalize(vmin=0, vmax=max(max(t),max(t_true)))
+    p1 = axs[0].scatter(x, y, c=t, cmap="coolwarm", norm=norm)
+
+    p2 = axs[1].scatter(x_true, y_true, c=t_true, cmap="coolwarm", norm=norm)
+
+
+    # cbar = fig.colorbar(p2, ax=axs, location='right')
+    plt.tight_layout()
+    plt.show()
+
 def new_gen(population, T):
     t = 0
     while (t < T):
+        print(f"Gen {t}")
+        temp = [[r[0], r[1]] for r in population]
+        print(temp)
+        # draw_plot(population)
         for i in range(len(population)):
             population[i][0] = encoding(population[i][0], epsN)
             population[i][1] = encoding(population[i][1], epsN)
         selected = selection(population, selection_n)
+        print("Selected")
+        temp = []
+        pop = []
+        for s in selected:
+            temp.append([decoding(s[0], epsN),decoding(s[1], epsN)])
+        pop = generate_population(temp)
+        print(temp)
+        # draw_plot(pop)
         children = crossover(selected, epsN)
+        print("Children")
+        temp = []
+        pop = []
+        for s in children:
+            temp.append([decoding(s[0], epsN),decoding(s[1], epsN)])
+        pop = generate_population(temp)
+        print(temp)
+        # draw_plot(pop)
         mut_children = mutation(children, mutation_n)
         for i in range(len(mut_children)):
             mut_children[i][0] = decoding(mut_children[i][0], epsN)
             mut_children[i][1] = decoding(mut_children[i][1], epsN)
         population = generate_population(mut_children)
+        print("Mutated")
+        temp = [[r[0], r[1]] for r in population]
+        print(temp)
+        # draw_plot(population)
         t += 1
     return population
 
 ind = starting_individuals(left_edge,right_edge,bottom, top, N)
 P = generate_population(ind)
 result = new_gen(P, T)
-
-
-p = generate_population(starting_individuals(left_edge, right_edge,bottom, top, 100))
-x = [r[0] for r in result]
-y = [r[1] for r in result]
-t = [r[2] for r in result]
-x_true = [r[0] for r in p]
-y_true = [r[1] for r in p]
-t_true = [r[2] for r in p]
-
-fig, axs = plt.subplots(1, 2, figsize=(12, 5))
-
-norm = Normalize(vmin=0, vmax=max(max(t),max(t_true)))
-p1 = axs[0].scatter(x, y, c=t, cmap="coolwarm", norm=norm)
-
-p2 = axs[1].scatter(x_true, y_true, c=t_true, cmap="coolwarm", norm=norm)
-
-
-cbar = fig.colorbar(p2, ax=axs, location='right')
-plt.tight_layout()
-plt.show()
+draw_plot(result)
