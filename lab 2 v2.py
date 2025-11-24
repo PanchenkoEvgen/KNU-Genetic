@@ -15,7 +15,11 @@ selection_n = 20
 mutation_n = 3
 
 def func(x):
-    return 0.4 + abs(math.sin(2*math.pi*x))*abs(math.cos(1.5*x))-0.5*abs(x-0.7)
+    term1 = 0.5 * abs(x) + 0.5
+    term2 = -0.5 * math.cos((70.0/6) * (math.tan(x) - 1.5 * math.sin(x)))
+    term3 = math.sin((120.0/7) * x) * abs(x - 0.5)
+    term4 = -math.cos(x) * abs(math.sin(x))
+    return (term1 + term2 + term3 + term4)
 
 def starting_individuals(l, r, n):
     individuals = []
@@ -107,9 +111,9 @@ def new_gen(population, T):
     t = 0
     while (t < T):
         print("Start gen")
-        for i in range(len(population)):
-            print(population[i][0])
-        draw_plot(population)
+        temp = [p[0] for p in population]
+        print(temp)
+        # draw_plot(population)
         for i in range(len(population)):
             population[i][0] = encoding(population[i][0], epsN)
         selected = selection(population, selection_n)
@@ -121,16 +125,17 @@ def new_gen(population, T):
         print(temp)
         for i in range(len(temp)):
             pop.append([temp[i],func(temp[i])])
-        draw_plot(pop)
+        # draw_plot(pop)
         children = crossover(selected, epsN)
         print("Children")
         temp = []
+        pop = []
         for c in children:
             temp.append(decoding(c, epsN))
         print(temp)
         for i in range(len(temp)):
             pop.append([temp[i],func(temp[i])])
-        draw_plot(pop)
+        # draw_plot(pop)
         mut_children = mutation(children, mutation_n)
         temp = []
         for i in range(len(mut_children)):
@@ -139,7 +144,7 @@ def new_gen(population, T):
         print("Mutated")
         population = generate_population(mut_children)
         print(temp)
-        draw_plot(population)
+        # draw_plot(population)
         
         t += 1
     return population
