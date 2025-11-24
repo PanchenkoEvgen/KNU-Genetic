@@ -85,14 +85,48 @@ def mutation(individuals, n):
         if individuals[random_i] < 0:
             individuals[random_i] = 0
     return individuals
+def draw_plot(result):
+    x = [r[0] for r in result]
+    y = [r[1] for r in result]
+
+    plt.scatter(x, y, color="red")
+    p = generate_population(starting_individuals(left_edge, right_edge, 1000))
+    x_true = [r[0] for r in p]
+    y_true = [r[1] for r in p]
+    plt.scatter(x_true, y_true, color="blue", s=0.2)
+    plt.show()
 
 def new_gen(population, T):
     t = 0
     while (t < T):
+        print("Start gen")
+        temp = []
+        for i in range(len(population)):
+            temp.append(population[i][0])
+        print(temp)
+        # draw_plot(population)
         selected = selection(population, selection_n)
+        print("Selected")
+        pop = []
+        print(selected)
+        for s in selected:
+            pop.append([s, func(s)])
+        # draw_plot(pop)
         children = crossover(selected)
+        print("Children")
+        pop = []
+        print(children)
+        for c in children:
+            pop.append([c, func(c)])
+        # draw_plot(pop)
         mut_children = mutation(children, mutation_n)
         population = generate_population(mut_children)
+        print("Mutated")
+        temp = []
+        for i in range(len(population)):
+            temp.append(population[i][0])
+        print(temp)
+        # draw_plot(population)
         t += 1
     return population
 
@@ -100,12 +134,4 @@ ind = starting_individuals(left_edge,right_edge,N)
 P = generate_population(ind)
 result = new_gen(P, T)
 
-x = [r[0] for r in result]
-y = [r[1] for r in result]
-
-plt.scatter(x, y, color="red")
-p = generate_population(starting_individuals(left_edge, right_edge, 1000))
-x_true = [r[0] for r in p]
-y_true = [r[1] for r in p]
-plt.scatter(x_true, y_true, color="blue", s=0.2)
-plt.show()
+draw_plot(result)
