@@ -91,31 +91,60 @@ def mutation(individuals, n):
         individuals[random_ind][random_gen] = random_num
     return individuals
 
+def draw_plot(result):
+    x = [r[0] for r in result]
+    y = [r[1] for r in result]
+
+    plt.scatter(x, y, color="red")
+    p = generate_population(starting_individuals(left_edge, right_edge, 1000))
+    x_true = [r[0] for r in p]
+    y_true = [r[1] for r in p]
+
+    plt.scatter(x_true, y_true, color="blue", s=0.2)
+    plt.show()
+
 def new_gen(population, T):
     t = 0
     while (t < T):
+        print("Start gen")
+        for i in range(len(population)):
+            print(population[i][0])
+        draw_plot(population)
         for i in range(len(population)):
             population[i][0] = encoding(population[i][0], epsN)
         selected = selection(population, selection_n)
+        print("Selected")
+        temp = []
+        pop = []
+        for s in selected:
+            temp.append(decoding(s, epsN))
+        print(temp)
+        for i in range(len(temp)):
+            pop.append([temp[i],func(temp[i])])
+        draw_plot(pop)
         children = crossover(selected, epsN)
+        print("Children")
+        temp = []
+        for c in children:
+            temp.append(decoding(c, epsN))
+        print(temp)
+        for i in range(len(temp)):
+            pop.append([temp[i],func(temp[i])])
+        draw_plot(pop)
         mut_children = mutation(children, mutation_n)
+        temp = []
         for i in range(len(mut_children)):
             mut_children[i] = decoding(mut_children[i], epsN)
+            temp.append(mut_children[i])
+        print("Mutated")
         population = generate_population(mut_children)
+        print(temp)
+        draw_plot(population)
+        
         t += 1
     return population
 
 ind = starting_individuals(left_edge,right_edge,N)
 P = generate_population(ind)
 result = new_gen(P, T)
-
-x = [r[0] for r in result]
-y = [r[1] for r in result]
-
-plt.scatter(x, y, color="red")
-p = generate_population(starting_individuals(left_edge, right_edge, 1000))
-x_true = [r[0] for r in p]
-y_true = [r[1] for r in p]
-
-plt.scatter(x_true, y_true, color="blue", s=0.2)
-plt.show()
+draw_plot(result)
