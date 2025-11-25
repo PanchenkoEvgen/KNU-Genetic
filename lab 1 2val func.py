@@ -198,7 +198,7 @@ def new_gen(population, T):
         temp = [[r[0], r[1]] for r in population]
         print(temp)
         # draw_plot(population)
-        result_plot(population)
+        # result_plot(population)
         for i in range(len(population)):
             population[i][0] = encoding(population[i][0], epsN)
             population[i][1] = encoding(population[i][1], epsN)
@@ -211,7 +211,7 @@ def new_gen(population, T):
         pop = generate_population(temp)
         print(temp)
         # draw_plot(pop)
-        result_plot(pop)
+        # result_plot(pop)
         children = crossover(selected, epsN)
         print("Children")
         temp = []
@@ -221,7 +221,7 @@ def new_gen(population, T):
         pop = generate_population(temp)
         print(temp)
         # draw_plot(pop)
-        result_plot(pop)
+        # result_plot(pop)
         mut_children = mutation(children, mutation_n)
         for i in range(len(mut_children)):
             mut_children[i][0] = decoding(mut_children[i][0], epsN)
@@ -231,7 +231,7 @@ def new_gen(population, T):
         temp = [[r[0], r[1]] for r in population]
         print(temp)
         # draw_plot(population)
-        result_plot(population)
+        # result_plot(population)
         t += 1
     return population
 
