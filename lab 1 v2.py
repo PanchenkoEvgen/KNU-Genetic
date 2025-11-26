@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import math
 import random
+import numpy as np
 
 N = 20 #population 
 T = 100 #quantity of generations
@@ -8,7 +9,7 @@ T = 100 #quantity of generations
 left_edge = 0
 right_edge = 1
 
-eps = 0.0001
+eps = 0.0000001
 epsN = int(-math.log10(eps))
 
 selection_n = 20
@@ -110,10 +111,11 @@ def draw_plot(result):
 def new_gen(population, T):
     t = 0
     while (t < T):
-        print("Start gen")
+        print(f"Gen {t}")
         temp = [p[0] for p in population]
         print(temp)
-        # draw_plot(population)
+        if t == 0:
+            draw_plot(population)
         for i in range(len(population)):
             population[i][0] = encoding(population[i][0], epsN)
         selected = selection(population, selection_n)
@@ -151,5 +153,9 @@ def new_gen(population, T):
 
 ind = starting_individuals(left_edge,right_edge,N)
 P = generate_population(ind)
-result = new_gen(P, T)
+s = []
+P = np.random.rand(N)
+for i in P:
+    s.append([i, func(i)])
+result = new_gen(s, T)
 draw_plot(result)
