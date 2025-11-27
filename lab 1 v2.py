@@ -3,8 +3,8 @@ import math
 import random
 import numpy as np
 
-N = 20 #population 
-T = 100 #quantity of generations
+N = 50 #population 
+T = 200 #quantity of generations
 
 left_edge = 0
 right_edge = 1
@@ -59,7 +59,9 @@ def selection(population, num): #num - кількість особистосте
     s_max = population[0][1]
     n = 0
     while n < num:
-        random_individual = random.uniform(0,s_max)
+        random_individual = random.gauss(s_max, 0.5)
+        if random_individual > s_max:
+            random_individual = abs(random_individual-s_max)
         individual_index = 0
         for individual, survavability in population:
             if n >= num:
@@ -138,14 +140,21 @@ def new_gen(population, T):
         for i in range(len(temp)):
             pop.append([temp[i],func(temp[i])])
         # draw_plot(pop)
-        mut_children = mutation(children, mutation_n)
-        temp = []
-        for i in range(len(mut_children)):
-            mut_children[i] = decoding(mut_children[i], epsN)
-            temp.append(mut_children[i])
-        print("Mutated")
-        population = generate_population(mut_children)
-        print(temp)
+        if t != T-1:
+            mut_children = mutation(children, mutation_n)
+            for i in range(len(mut_children)):
+                mut_children[i] = decoding(mut_children[i], epsN)
+                temp.append(mut_children[i])
+            print("Mutated")
+            population = generate_population(mut_children)
+            print(temp)
+        else:
+            for i in range(len(children)):
+                children[i] = decoding(children[i], epsN)
+                temp.append(mut_children[i])
+            print("Final population")
+            population = generate_population(children)
+            print(temp)
         # draw_plot(population)
         
         t += 1
@@ -154,8 +163,10 @@ def new_gen(population, T):
 ind = starting_individuals(left_edge,right_edge,N)
 P = generate_population(ind)
 s = []
-P = np.random.rand(N)
-for i in P:
+xr = []
+for i in range(N):
+    xr.append(random.uniform(left_edge,right_edge))
+for i in xr:
     s.append([i, func(i)])
 result = new_gen(s, T)
 draw_plot(result)
