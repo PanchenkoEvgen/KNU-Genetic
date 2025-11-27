@@ -60,37 +60,28 @@ def generate_population(individuals):
     return population
 
 def encoding(individual, n):
-    range_size = right_edge - left_edge 
-    normalized_val = (individual - left_edge) / range_size
-
-    normalized_val = max(0.0, min(1.0, normalized_val))
-
-    scaled_val = normalized_val * pow(10, n)
-    val_int = int(scaled_val)
-
-    max_val = pow(10, n) - 1
-    if val_int > max_val:
-        val_int = max_val
-
     individual_genes = []
-
+    if individual == 1.0:
+        individual = int(individual*pow(10,n-1))-1
+    else:
+        individual = int(individual*pow(10,n-1))
+    if individual >= 0:
+        individual_genes.append(0)
+    else:
+        individual_genes.append(1)
+    individual = abs(individual)
     for j in range(n):
-        individual_genes.append(val_int % 10)
-        val_int //= 10
-        
+        individual_genes.append(individual % 10)
+        individual //= 10
     return individual_genes
 
 def decoding(genes, n):
-    val_int = 0
-
-    for i in range(len(genes)):
-        val_int += genes[i] * pow(10, i)
-        
-    normalized_val = val_int / pow(10, n)
-    range_size = right_edge - left_edge
-    real_val = normalized_val * range_size + left_edge
-    
-    return round(real_val, epsN)
+    individual = 0
+    for i in range(n):
+        individual += genes[n-i] * pow(10, -i)
+    if genes[0] == 1:
+        individual *= -1
+    return round(individual, n)
 
 def selection(population, num, bias=2.0):
     selected_individuals = []
@@ -100,7 +91,7 @@ def selection(population, num, bias=2.0):
 
     weights = [i + 1 for i in range(pop_len)]
 
-    k = 3
+    k = 4
     
     for _ in range(num):
         candidates = random.choices(sorted_pop, weights=weights, k=k)
@@ -111,6 +102,24 @@ def selection(population, num, bias=2.0):
         
     return selected_individuals
 
+# def selection(population, num): #num - кількість особистостей, що ми хочемо обрати
+#     selected_individuals = []
+#     population.sort(key=lambda x:x[2], reverse = True)
+#     s_max = population[0][2]
+#     n = 0
+#     while n < num:
+#         random_individual = random.uniform(0,s_max)
+#         individual_index = 0
+#         for x, y, survavability in population:
+#             if n >= num:
+#                 break
+#             if survavability >= random_individual:
+#                 selected_individuals.append([x,y])
+#                 n += 1
+#             else:
+#                 break
+#     return selected_individuals
+
 def crossover(individuals, num):
     new_individuals = []
 
@@ -118,24 +127,26 @@ def crossover(individuals, num):
         return func(decoding(ind[0], num), decoding(ind[1], num))
 
     for i in range(0, len(individuals), 2):
-        if i + 1 >= len(individuals):
-            new_individuals.append(individuals[i])
-            break
-            
-        p1, p2 = individuals[i], individuals[i+1]
+        parent1 = individuals[i]
+        parent2 = individuals[i+1]
+        child1 = [[],[]]
+        child2 = [[],[]]
+        child1[0].append(parent2[0][0])
+        child1[1].append(parent2[1][0])
+        child2[0].append(parent1[0][0])
+        child2[1].append(parent1[1][0])
+        for j in range(1,int(num/2)):
+            child1[0].append(parent2[0][j])
+            child1[1].append(parent2[1][j])
+            child2[0].append(parent1[0][j])
+            child2[1].append(parent1[1][j])
+        for j in range(int(num/2), num+1):
+            child1[0].append(parent1[0][j])
+            child1[1].append(parent1[1][j])
+            child2[0].append(parent2[0][j])
+            child2[1].append(parent2[1][j])
 
-        c1, c2 = [[], []], [[], []]
-        alpha = random.random()
-        
-        for idx in range(2):
-            for j in range(num):
-                val1 = alpha * p1[idx][j] + (1 - alpha) * p2[idx][j]
-                val2 = (1 - alpha) * p1[idx][j] + alpha * p2[idx][j]
-                
-                c1[idx].append(max(0, min(9, int(round(val1)))))
-                c2[idx].append(max(0, min(9, int(round(val2)))))
-
-        family = [p1, p2, c1, c2]
+        family = [parent1, parent2, child1, child2]
 
         family.sort(key=get_fitness, reverse=True)
 
