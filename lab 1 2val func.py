@@ -83,47 +83,45 @@ def decoding(genes, n):
         individual *= -1
     return round(individual, n)
 
-def selection(population, num, bias=2.0):
-    selected_individuals = []
-
-    sorted_pop = sorted(population, key=lambda x: x[2])
-    pop_len = len(sorted_pop)
-
-    weights = [i + 1 for i in range(pop_len)]
-
-    k = 4
-    
-    for _ in range(num):
-        candidates = random.choices(sorted_pop, weights=weights, k=k)
-
-        winner = max(candidates, key=lambda x: x[2])
-
-        selected_individuals.append([winner[0][:], winner[1][:]])
-        
-    return selected_individuals
-
-# def selection(population, num): #num - кількість особистостей, що ми хочемо обрати
-
-#     def biased_random_power(a, b, k=2):
-#         u = random.random()
-#         return a + (b - a) * (u ** (1/k))
-
+# def selection(population, num, bias=2.0):
 #     selected_individuals = []
-#     population.sort(key=lambda x:x[2], reverse = True)
-#     s_max = population[0][2]
-#     n = 0
-#     while n < num:
-#         random_individual = biased_random_power(0,s_max)
-#         individual_index = 0
-#         for x, y, survavability in population:
-#             if n >= num:
-#                 break
-#             if survavability >= random_individual:
-#                 selected_individuals.append([x,y])
-#                 n += 1
-#             else:
-#                 break
+
+#     sorted_pop = sorted(population, key=lambda x: x[2])
+#     pop_len = len(sorted_pop)
+
+#     weights = [i + 1 for i in range(pop_len)]
+
+#     k = 4
+    
+#     for _ in range(num):
+#         candidates = random.choices(sorted_pop, weights=weights, k=k)
+
+#         winner = max(candidates, key=lambda x: x[2])
+
+#         selected_individuals.append([winner[0][:], winner[1][:]])
+        
 #     return selected_individuals
+
+def selection(population, num): #num - кількість особистостей, що ми хочемо обрати
+
+    selected_individuals = []
+    population.sort(key=lambda x:x[2], reverse = True)
+    s_max = population[0][2]
+    n = 0
+    while n < num:
+        random_individual = random.gauss(s_max, 0.5)
+        if random_individual > s_max:
+            random_individual = abs(random_individual-s_max)
+        individual_index = 0
+        for x, y, survavability in population:
+            if n >= num:
+                break
+            if survavability >= random_individual:
+                selected_individuals.append([x,y])
+                n += 1
+            else:
+                break
+    return selected_individuals
 
 # def selection(population, num): #num - кількість особистостей, що ми хочемо обрати
 #     sum = 0
@@ -201,13 +199,14 @@ def crossover(individuals, num):
 #     return individuals
 
 def shotgun_mutation(individuals, n):
+    mut_eps = 0.1
     used_i = []
     for i in range(n):
         random_ind = random.randint(0,len(individuals)-1)
         if random_ind not in used_i:
-            random_num = random.uniform(-0.05,0.05)
+            random_num = random.uniform(-mut_eps,mut_eps)
             individuals[random_ind][0] += random_num
-            random_num = random.uniform(-0.05,0.05)
+            random_num = random.uniform(-mut_eps,mut_eps)
             individuals[random_ind][1] += random_num
 
         else:
