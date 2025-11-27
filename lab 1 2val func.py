@@ -103,12 +103,17 @@ def selection(population, num, bias=2.0):
     return selected_individuals
 
 # def selection(population, num): #num - кількість особистостей, що ми хочемо обрати
+
+#     def biased_random_power(a, b, k=2):
+#         u = random.random()
+#         return a + (b - a) * (u ** (1/k))
+
 #     selected_individuals = []
 #     population.sort(key=lambda x:x[2], reverse = True)
 #     s_max = population[0][2]
 #     n = 0
 #     while n < num:
-#         random_individual = random.uniform(0,s_max)
+#         random_individual = biased_random_power(0,s_max)
 #         individual_index = 0
 #         for x, y, survavability in population:
 #             if n >= num:
@@ -118,6 +123,24 @@ def selection(population, num, bias=2.0):
 #                 n += 1
 #             else:
 #                 break
+#     return selected_individuals
+
+# def selection(population, num): #num - кількість особистостей, що ми хочемо обрати
+#     sum = 0
+#     for individual_x, individual_y, survavability in population:
+#         sum += survavability
+#     probability_split = [[population[0][0], population[0][1],population[0][2]/sum*100]]
+#     for i in range(1,len(population)):
+#         probability_split.append([population[i][0], population[i][1], population[i][2]/sum*100+probability_split[i-1][2]])
+#     selected_individuals = []
+#     for n in range(num):
+#         random_individual = random.uniform(0,100)
+#         individual_index = 0
+#         for i in range(len(probability_split)):
+#             if random_individual < probability_split[i][2]:
+#                 individual_index = i
+#                 break
+#         selected_individuals.append([probability_split[individual_index][0], probability_split[individual_index][1]])
 #     return selected_individuals
 
 def crossover(individuals, num):
