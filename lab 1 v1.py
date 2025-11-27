@@ -80,7 +80,9 @@ def selection(population, num): #num - кількість особистосте
     s_max = population[0][1]
     n = 0
     while n < num:
-        random_individual = random.uniform(0,s_max)
+        random_individual = random.gauss(s_max, 0.5)
+        if random_individual > s_max:
+            random_individual = abs(random_individual-s_max)
         individual_index = 0
         for individual, survavability in population:
             if n >= num:
@@ -209,3 +211,9 @@ for i in xr:
 result = new_gen(s, T)
 
 draw_plot(result)
+
+# p = generate_population(starting_individuals(left_edge, right_edge, 1000))
+# x_true = [r[0] for r in p]
+# y_true = [r[1] for r in p]
+# plt.scatter(x_true, y_true, color="blue", s=0.2)
+# plt.show()
